@@ -1,4 +1,5 @@
 streamlit
+streamlit-image-paste
+Pillow
 easyocr
 numpy
-Pillow
