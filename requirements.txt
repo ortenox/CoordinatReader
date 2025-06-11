@@ -2,4 +2,3 @@ streamlit==1.35.0
 Pillow
 numpy
 easyocr
-git+https://github.com/okld/streamlit-paste-button.git
