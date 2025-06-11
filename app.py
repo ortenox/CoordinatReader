@@ -4,13 +4,22 @@ import easyocr
 import numpy as np
 import re
 
+# Tambahkan import ini
+from streamlit_image_paste import paste_image
+
 st.set_page_config(page_title="Deteksi Koordinat dari Screenshot", layout="centered")
 st.title("📸 Deteksi Koordinat dari Screenshot")
 
+st.markdown("📋 Klik di sini lalu tekan **Ctrl + V** untuk tempel screenshot (atau unggah manual)")
+
+# Upload file manual (opsional)
 uploaded_file = st.file_uploader(
-    "📤 Klik di sini lalu tekan **Ctrl + V** untuk tempel screenshot (atau unggah manual)", 
+    label="Unggah file gambar",
     type=["png", "jpg", "jpeg"]
 )
+
+# Coba paste dari clipboard
+pasted_image = paste_image()
 
 @st.cache_resource
 def load_reader():
@@ -26,8 +35,14 @@ def extract_latlong_from_text(text):
         return f"{lat},{lon}"
     return None
 
+# Tentukan sumber gambar: upload atau paste
+image = None
 if uploaded_file:
     image = Image.open(uploaded_file)
+elif pasted_image is not None:
+    image = pasted_image
+
+if image:
     st.image(image, caption="🖼️ Gambar berhasil dimuat", use_column_width=True)
 
     with st.spinner("🔍 Memproses OCR..."):
