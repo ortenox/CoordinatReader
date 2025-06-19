@@ -3,13 +3,19 @@ from PIL import Image
 import easyocr
 import numpy as np
 import re
-from streamlit_paste_button import paste_image_button
 
 st.set_page_config(page_title="Deteksi Koordinat dari Screenshot", layout="centered")
 st.title("📸 Deteksi Koordinat dari Screenshot")
 
-# Komponen paste image dari clipboard
-image = paste_image_button("📋 Klik tombol ini lalu tekan Ctrl+V untuk tempel screenshot dari clipboard")
+st.markdown("""
+### 📋 Cara Menggunakan:
+1. Ambil screenshot (misalnya dengan Snipping Tool atau PrtSc)
+2. Klik pada area upload di bawah
+3. Tekan **Ctrl + V** untuk langsung menempelkan gambar
+""")
+
+# File uploader yang bisa menangkap paste Ctrl+V (tidak perlu simpan manual)
+uploaded_img = st.file_uploader("📎 Tempel atau unggah gambar (png/jpg/jpeg)", type=["png", "jpg", "jpeg"])
 
 @st.cache_resource
 def load_reader():
@@ -25,10 +31,11 @@ def extract_latlong_from_text(text):
         return f"{lat},{lon}"
     return None
 
-if image:
-    st.image(image, caption="🖼️ Gambar berhasil ditempel", use_column_width=True)
+if uploaded_img:
+    image = Image.open(uploaded_img)
+    st.image(image, caption="🖼️ Gambar berhasil diterima", use_column_width=True)
 
-    with st.spinner("🔍 Memproses OCR..."):
+    with st.spinner("🔍 Memproses teks dari gambar..."):
         result = reader.readtext(np.array(image), detail=0)
         ocr_result = "\n".join(result)
 
@@ -42,4 +49,4 @@ if image:
     else:
         st.error("❌ Koordinat tidak valid ditemukan.")
 else:
-    st.info("📝 Tempel screenshot menggunakan Ctrl+V atau klik tombol paste di atas.")
+    st.info("📝 Tempel atau unggah gambar screenshot untuk mulai.")
